@@ -1,3 +1,5 @@
+package Assign1;
+
 /*	Joshua Graham
 	 *  ID: 11490893
 	 *  ITC-313
@@ -43,9 +45,9 @@ public class Java2Assign1Task1Applet extends JApplet implements ActionListener {
 	        //Execute when button is pressed
 	    	String imagefilename = "screenshot.png";  		//set the filename
 	    	try {
-		    	BufferedImage bi = ScreenImage.createImage(this); 	//create the image by passing the frame
+		    	BufferedImage bi = new ScreenImage().createImage(this); 	//create the image by passing the frame
 		    	FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG Files", "png", "PNG");
-		    	overwriteCheckerJFileChooser fileChooser = new overwriteCheckerJFileChooser();	//this file chooser will check before override files
+		    	OverwriteCheckerJFileChooser fileChooser = new OverwriteCheckerJFileChooser();	//this file chooser will check before override files
 		    	fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);	//must set to at least files in order for the default filename to show
 		    	fileChooser.setSelectedFile(new File(imagefilename));
 		    	fileChooser.setFileFilter(filter);
@@ -86,13 +88,13 @@ public class Java2Assign1Task1Applet extends JApplet implements ActionListener {
 				zoomLabel.setText(zoomLevel + "%");	//set zoom text
 			}
 			if (keepGoing == true) {
-				while (DrawPanel.pointsList.size() > i) {
-					realX = Integer.parseInt(DrawPanel.pointsList.get((int) i)); //get our POI data
-					realY = Integer.parseInt(DrawPanel.pointsList.get(i+1));
+				while (this.mainp.pointsList.size() > i) {
+					realX = Integer.parseInt(this.mainp.pointsList.get((int) i)); //get our POI data
+					realY = Integer.parseInt(this.mainp.pointsList.get(i+1));
 					//set postion incase we don't change them
 					posX = realX;
 					posY = realY;
-					pointName = DrawPanel.pointsList.get(i+2);
+					pointName = this.mainp.pointsList.get(i+2);
 					//get relative data
 					y = realY - centerY;
 					x = realX - centerX;
@@ -127,9 +129,9 @@ public class Java2Assign1Task1Applet extends JApplet implements ActionListener {
 						}
 						pointsLabels.get((i+2)/3).setLocation((int)posX, (int)(posY - correction));
 					}
-					DrawPanel.pointsList.set(i, Integer.toString((int)posX));	//set the coordinates data variables
-					DrawPanel.pointsList.set(i+1, Integer.toString((int)posY));
-					DrawPanel.pointsList.set(i+2, pointName);
+					this.mainp.pointsList.set(i, Integer.toString((int)posX));	//set the coordinates data variables
+					this.mainp.pointsList.set(i+1, Integer.toString((int)posY));
+					this.mainp.pointsList.set(i+2, pointName);
 					i+=3;
 					}
 				mainp.revalidate();	//get rid of graphic artifacts
@@ -175,8 +177,9 @@ public class Java2Assign1Task1Applet extends JApplet implements ActionListener {
 	    this.setVisible(true);	//done setting up, now to display
 	    ArrayList<String> POI = new ArrayList<String>();
 	    String textFile = "POI.txt";
+	    URL baseUrl = getCodeBase();
 	    try {
-	    	URL source = new URL(getDocumentBase(), textFile);
+	    	URL source = new URL(baseUrl, textFile);
 	    	BufferedReader theText = new BufferedReader(new InputStreamReader(source.openStream()));
 	    	String aLine;
 			while ((aLine = theText.readLine()) != null) { //if data is in the line (not null)
@@ -191,14 +194,14 @@ public class Java2Assign1Task1Applet extends JApplet implements ActionListener {
 			mainp.setLayout(new GridBagLayout());
 			mainp.add(errorLabel);
 		}
-	    DrawPanel.setMyValue(POI);	//pass arraylist to method so that we can paint the points
+	    this.mainp.setMyValue(POI);	//pass arraylist to method so that we can paint the points
 	    int x, y;			//initialise variables 
   	  	String pointName;
   	  	int i = 0;
-	  	while (DrawPanel.pointsList.size() > i) {
-	  			x = Integer.parseInt(DrawPanel.pointsList.get(i));	//pass elements to variables
-	  			y = Integer.parseInt(DrawPanel.pointsList.get(i+1));
-	  			pointName = DrawPanel.pointsList.get(i+2);
+	  	while (this.mainp.pointsList.size() > i) {
+	  			x = Integer.parseInt(this.mainp.pointsList.get(i));	//pass elements to variables
+	  			y = Integer.parseInt(this.mainp.pointsList.get(i+1));
+	  			pointName = this.mainp.pointsList.get(i+2);
 	  			JLabel aPointLabel = new JLabel(pointName);	//create label for each point
 	  			pointsLabels.add(aPointLabel);
 	  			mainp.add(pointsLabels.get((i+2)/3));						//setup and add each point to panel 
@@ -213,77 +216,77 @@ public class Java2Assign1Task1Applet extends JApplet implements ActionListener {
 	  	btnZoomIn.addActionListener(this); //attach a listener to the btn that saves
 	  	btnZoomOut.addActionListener(this); //attach a listener to the btn that saves
 		}
-}
-
-class ScreenImage
-{
-	public static BufferedImage createImage(Component programFrame) //Receive the frame
-		throws AWTException
+	class ScreenImage
 	{
-		Point somepoint = new Point(0, 0); //make a point
-		SwingUtilities.convertPointToScreen(somepoint, programFrame); //convert from program to screen coodinates
-		Rectangle coordinates = programFrame.getBounds(); //get the boundry of the screen
-		coordinates.x = somepoint.x;	//use the specific area of the program space
-		coordinates.y = somepoint.y;
-		//capture the an image of the screen  using the coordinates we got earlier
-		BufferedImage programImage = new Robot().createScreenCapture(coordinates); 
-		return programImage; //made the image, now pass it back to program to be written
+		public BufferedImage createImage(Component programFrame) //Receive the frame
+			throws AWTException
+		{
+			Point somepoint = new Point(0, 0); //make a point
+			SwingUtilities.convertPointToScreen(somepoint, programFrame); //convert from program to screen coodinates
+			Rectangle coordinates = programFrame.getBounds(); //get the boundry of the screen
+			coordinates.x = somepoint.x;	//use the specific area of the program space
+			coordinates.y = somepoint.y;
+			//capture the an image of the screen  using the coordinates we got earlier
+			BufferedImage programImage = new Robot().createScreenCapture(coordinates); 
+			return programImage; //made the image, now pass it back to program to be written
+		}
 	}
+	//check file exists before overrite 
+	//http://stackoverflow.com/questions/3651494/jfilechooser-with-confirmation-dialog
+	class OverwriteCheckerJFileChooser extends JFileChooser{
+
+		private static final long serialVersionUID = 1L;
+		@Override
+	    public void approveSelection(){
+	        File f = getSelectedFile();
+	        if(f.exists() && getDialogType() == SAVE_DIALOG){
+	            int result = JOptionPane.showConfirmDialog(this,"The file exists, overwrite?","Existing file",JOptionPane.YES_NO_CANCEL_OPTION);
+	            switch(result){
+	                case JOptionPane.YES_OPTION:
+	                    super.approveSelection();
+	                    return;
+	                case JOptionPane.NO_OPTION:
+	                    return;
+	                case JOptionPane.CLOSED_OPTION:
+	                    return;
+	                case JOptionPane.CANCEL_OPTION:
+	                    cancelSelection();
+	                    return;
+	            }
+	        }
+	        super.approveSelection();
+	    }
+	}
+	//create a component that you can actually draw on. (extends JPanel instead of JFrame)
+	@SuppressWarnings("serial")
+	class DrawPanel extends JPanel{
+		List<String> pointsList = new ArrayList<String>(); //a field variable to be used in paint component
+		double factor = 0.5;
+		double squareSize[] = {100.0, 50.0};
+		
+		public void setMyValue(List<String> locations){
+		  pointsList = locations ; //pass variable to a field we can use in paint component
+		  }
+		@Override
+		public void paintComponent(Graphics g){
+			  //draw on g here e.g.
+			  super.paintComponent(g); //draw the system buttons etc first
+			  g.setColor(Color.BLUE);	//draw the points in blue
+
+			  if (pointsList != null){ //due to threads, paint starts before we get coordinates, so we if we have them first
+				  int i = 0;
+				  int x, y;
+					while (pointsList.size() > i) {
+						x = Integer.parseInt(pointsList.get(i));
+						i++;
+						y = Integer.parseInt(pointsList.get(i));
+						i++;
+						i++;
+						g.drawOval(x, y, 20, 20);
+						}
+			  		}
+			  	}
+		}
+
 }
-//check file exists before overrite 
-//http://stackoverflow.com/questions/3651494/jfilechooser-with-confirmation-dialog
-class overwriteCheckerJFileChooser extends JFileChooser{
-	private static final long serialVersionUID = 1L;
-	@Override
-    public void approveSelection(){
-        File f = getSelectedFile();
-        if(f.exists() && getDialogType() == SAVE_DIALOG){
-            int result = JOptionPane.showConfirmDialog(this,"The file exists, overwrite?","Existing file",JOptionPane.YES_NO_CANCEL_OPTION);
-            switch(result){
-                case JOptionPane.YES_OPTION:
-                    super.approveSelection();
-                    return;
-                case JOptionPane.NO_OPTION:
-                    return;
-                case JOptionPane.CLOSED_OPTION:
-                    return;
-                case JOptionPane.CANCEL_OPTION:
-                    cancelSelection();
-                    return;
-            }
-        }
-        super.approveSelection();
-    }
-};
-
-//create a component that you can actually draw on. (extends JPanel instead of JFrame)
-@SuppressWarnings("serial")
-class DrawPanel extends JPanel{
-	static List<String> pointsList = new ArrayList<String>(); //a field variable to be used in paint component
-	static double factor = 0.5;
-	double squareSize[] = {100.0, 50.0};
-	
-	public static void setMyValue(List<String> locations){
-	  pointsList = locations ; //pass variable to a field we can use in paint component
-	  }
-	@Override
-	public void paintComponent(Graphics g){
-		  //draw on g here e.g.
-		  super.paintComponent(g); //draw the system buttons etc first
-		  g.setColor(Color.BLUE);	//draw the points in blue
-
-		  if (pointsList != null){ //due to threads, paint starts before we get coordinates, so we if we have them first
-			  int i = 0;
-			  int x, y;
-				while (pointsList.size() > i) {
-					x = Integer.parseInt(pointsList.get(i));
-					i++;
-					y = Integer.parseInt(pointsList.get(i));
-					i++;
-					i++;
-					g.drawOval(x, y, 20, 20);
-					}
-		  		}
-		  	}
-	}
 
